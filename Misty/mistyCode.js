@@ -19,6 +19,7 @@ var stop = document.getElementById("stop");
 var resultsBox = document.getElementById("results");
 var client;
 var ip;
+var count = 0;
 var msg = {
   "$id": "1",
   "Operation": "subscribe",
@@ -81,11 +82,11 @@ function createDimensionForm(){
   if (selectedShape == "rectangle"){
     len.setAttribute("type", "number");
     width.setAttribute("type", "number");
-    formSub.setAttribute("type", "submit");
+    formSub.setAttribute("type", "button");
   }
   else if (selectedShape == "circle"){
     diameter.setAttribute("type", "number");
-    formSub.setAttribute("type", "submit");
+    formSub.setAttribute("type", "button");
   }
   else{
     alert("Not implemented, yet.");
@@ -94,21 +95,38 @@ function createDimensionForm(){
 
 function getDimensions(){
   if (shapeElement[shapeElement.selectedIndex].value == "rectangle"){
-    wander("rectangle", len.val, width.val);
+    startSentry(len.value, width.value);
   }
 }
 
 function wander(shape, length, width){
   var driveArgs = {
     "LinearVelocity": 10,
-    "AngularVelocity": 0
+    "AngularVelocity": 0,
+    "TimeMS": 10000
   }
-  client.PostCommand("drive", JSON.stringify(driveArgs));
+  var turnArgs = {
+    "LinearVelocity": 5,
+    "AngularVelocity": 50,
+    "TimeMS": 2000
+  }
+  client.PostCommand("drive/time", JSON.stringify(driveArgs));
+  // client.PostCommand("drive/time", JSON.stringify(turnArgs));
 }
 
 //main sentry function
-function startSentry() {
+function startSentry(length, width) {
     //TODO
+    /*
+    var headArgs = {
+      "Pitch": -5,
+      "Roll": 0,
+      "Yaw": 0,
+      "Velocity": 5
+    }
+    client.PostCommand("beta/head/move", JSON.stringify(headArgs));
+    */
+    wander("rectangle", length, width);
     detectFaces();
 }
 
@@ -154,14 +172,15 @@ function detectFaces() {
 // Stop sentry function
 function stopSentry() {
   client.PostCommand("beta/faces/detection/stop");
+  client.PostCommand("drive/stop");
 
-if(socket) {
-  socket.send(unsubscribeMessage);
-  printToScreen("Face detection stopped.");  
-  //socket.close();
-}
+  if(socket) {
+    socket.send(unsubscribeMessage);
+    printToScreen("Face detection stopped.");  
+    //socket.close();
+  }
 
-messageCount = 0;
+  messageCount = 0;
 }
 
 //This function is validates that the number in the text field looks like an IP address
