@@ -67,54 +67,59 @@ stop.onclick = function() {
 //main sentry function
 function startSentry() {
     //TODO
-    //Create a new websocket, if one is not already open
-    socket = new WebSocket("ws://" + ip + "/pubsub");
+    detectFaces();
+}
+
+//Face Detection
+function detectFaces() {
+  //Create a new websocket, if one is not already open
+  socket = new WebSocket("ws://" + ip + "/pubsub");
     
-    //When the socket is open, send the message
-    socket.onopen = function(event) {
-      printToScreen("WebSocket opened.");
-      socket.send(message);
-      client.PostCommand("beta/faces/detection/start");
-      printToScreen("Face detection started.");
-    };
+  //When the socket is open, send the message
+  socket.onopen = function(event) {
+    printToScreen("WebSocket opened.");
+    socket.send(message);
+    client.PostCommand("beta/faces/detection/start");
+    printToScreen("Face detection started.");
+  };
+  
+  // Handle messages received from the server
+  socket.onmessage = function(event) {
+    messageCount +=1;
+    var msg = JSON.parse(event.data).message;
+    console.log(msg);
     
-    // Handle messages received from the server
-    socket.onmessage = function(event) {
-      messageCount +=1;
-      var msg = JSON.parse(event.data).message;
-      console.log(msg);
-      
-      // Adjust the timing of the desired reaction based on
-      // how frequently the face detection messages come through
-      if (messageCount % 5 === 0) {
-        printToScreen("Face detected.");
-        var payload = JSON.stringify(playThisSound);
-        client.PostCommand("audio/play", payload);
-      }
-    };
-    
-    // Handle any errors that occur.
-    socket.onerror = function(error) {
-      console.log("WebSocket Error: " + error);
-    };
-    
-    // Do something when the WebSocket is closed.
-    socket.onclose = function(event) {
-      printToScreen("WebSocket closed.");
-    };
+    // Adjust the timing of the desired reaction based on
+    // how frequently the face detection messages come through
+    if (messageCount % 5 === 0) {
+      printToScreen("Face detected.");
+      var payload = JSON.stringify(playThisSound);
+      client.PostCommand("audio/play", payload);
+    }
+  };
+  
+  // Handle any errors that occur.
+  socket.onerror = function(error) {
+    console.log("WebSocket Error: " + error);
+  };
+  
+  // Do something when the WebSocket is closed.
+  socket.onclose = function(event) {
+    printToScreen("WebSocket closed.");
+  };
 }
 
 // Stop sentry function
 function stopSentry() {
-    client.PostCommand("beta/faces/detection/stop");
+  client.PostCommand("beta/faces/detection/stop");
 
-  if(socket) {
-    socket.send(unsubscribeMessage);
-    printToScreen("Face detection stopped.");  
-    //socket.close();
-  }
+if(socket) {
+  socket.send(unsubscribeMessage);
+  printToScreen("Face detection stopped.");  
+  //socket.close();
+}
 
-  messageCount = 0;
+messageCount = 0;
 }
 
 //This function is validates that the number in the text field looks like an IP address
