@@ -19,15 +19,24 @@
 			</div>
 			<h3>Select Room Shape: </h3>
 			 <div class="custom-select" style="width:200px;" >
-			  <select onchange="changeShape()" id="shape-selection">
-			    <option value="notDefined">Shape:</option>
+			  <select onchange="createDimensionForm()" id="shape-selection">
+			    <option value="notDefined">(Select)</option>
 			    <option value="rectangle">Rectangle</option>
 			    <option value="circle">Circle</option>
-			    <option value="lShape">L</option>
+			    <option value="lShape">L-Shape</option>
 			  </select>
 			</div>
-			<div class="">
-				
+			<div id="shape-form-div">
+				<form id="shape-form" onsubmit="getDimensions()">
+					<h3>Enter the Dimensions: </h3>
+					<input type="hidden" name="length" placeholder="Length" id="length-input">
+					<br>
+					<input type="hidden" name="width" placeholder="Width" id="width-input">
+					<br>
+					<input type="hidden" name="diameter" placeholder="Diameter" id="diameter-input">
+					<br>
+					<input type="hidden" value="Enter" id="form-submit">
+				</form>
 			</div>
 			<h3>Command: </h3>
 			<div id="command">

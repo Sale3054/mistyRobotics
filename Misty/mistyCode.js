@@ -4,6 +4,8 @@
 
 var playThisSound = { "AssetId": "001-OooOooo.wav", };
 var shapeElement = document.getElementById("shape-selection");
+var formDiv = document.getElementById("shape-form-div");
+var dimensionsForm = document.getElementById("shape-form");
 var ipAddress  = document.getElementById("ip-address");
 var connect = document.getElementById("connect");
 var start = document.getElementById("start");
@@ -64,12 +66,28 @@ stop.onclick = function() {
     stopSentry();
 };
 
-function changeShape(){
+function createDimensionForm(){ 
   selectedShape = shapeElement[shapeElement.selectedIndex].value;
-  console.log(selectedShape);
+  var len = document.getElementById("length-input");
+  var width = document.getElementById("width-input");
+  var diameter = document.getElementById("diameter-input");
+  var sub = document.getElementById("form-submit");
+  len.setAttribute("type", "hidden");
+  width.setAttribute("type", "hidden");
+  diameter.setAttribute("type", "hidden");
+  sub.setAttribute("type", "hidden");
+  if (selectedShape == "rectangle"){
+    len.setAttribute("type", "number");
+    width.setAttribute("type", "number");
+    sub.setAttribute("type", "submit");
+  }
+  else if (selectedShape == "circle"){
+    diameter.setAttribute("type", "number");
+    sub.setAttribute("type", "submit");
+  }
 }
 
-function addInput(){
+function getDimensions(){
   
 }
 
