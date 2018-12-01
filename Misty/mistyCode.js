@@ -4,8 +4,14 @@
 
 var playThisSound = { "AssetId": "001-OooOooo.wav", };
 var shapeElement = document.getElementById("shape-selection");
+
 var formDiv = document.getElementById("shape-form-div");
 var dimensionsForm = document.getElementById("shape-form");
+var len = document.getElementById("length-input");
+var width = document.getElementById("width-input");
+var diameter = document.getElementById("diameter-input");
+var formSub = document.getElementById("form-submit");
+
 var ipAddress  = document.getElementById("ip-address");
 var connect = document.getElementById("connect");
 var start = document.getElementById("start");
@@ -68,27 +74,36 @@ stop.onclick = function() {
 
 function createDimensionForm(){ 
   selectedShape = shapeElement[shapeElement.selectedIndex].value;
-  var len = document.getElementById("length-input");
-  var width = document.getElementById("width-input");
-  var diameter = document.getElementById("diameter-input");
-  var sub = document.getElementById("form-submit");
   len.setAttribute("type", "hidden");
   width.setAttribute("type", "hidden");
   diameter.setAttribute("type", "hidden");
-  sub.setAttribute("type", "hidden");
+  formSub.setAttribute("type", "hidden")
   if (selectedShape == "rectangle"){
     len.setAttribute("type", "number");
     width.setAttribute("type", "number");
-    sub.setAttribute("type", "submit");
+    formSub.setAttribute("type", "submit");
   }
   else if (selectedShape == "circle"){
     diameter.setAttribute("type", "number");
-    sub.setAttribute("type", "submit");
+    formSub.setAttribute("type", "submit");
+  }
+  else{
+    alert("Not implemented, yet.");
   }
 }
 
 function getDimensions(){
-  
+  if (shapeElement[shapeElement.selectedIndex].value == "rectangle"){
+    wander("rectangle", len.val, width.val);
+  }
+}
+
+function wander(shape, length, width){
+  var driveArgs = {
+    "LinearVelocity": 10,
+    "AngularVelocity": 0
+  }
+  client.PostCommand("drive", JSON.stringify(driveArgs));
 }
 
 //main sentry function
