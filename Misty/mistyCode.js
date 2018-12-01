@@ -3,7 +3,7 @@
 //---------------
 
 var playThisSound = { "AssetId": "001-OooOooo.wav", };
-
+var shapeElement = document.getElementById("shape-selection");
 var ipAddress  = document.getElementById("ip-address");
 var connect = document.getElementById("connect");
 var start = document.getElementById("start");
@@ -63,6 +63,15 @@ start.onclick = function() {
 stop.onclick = function() {
     stopSentry();
 };
+
+function changeShape(){
+  selectedShape = shapeElement[shapeElement.selectedIndex].value;
+  console.log(selectedShape);
+}
+
+function addInput(){
+  
+}
 
 //main sentry function
 function startSentry() {
@@ -140,5 +149,5 @@ function validateIPAddress(ip) {
 
 function printToScreen(msg) {
     resultsBox.innerHTML += (msg + "\n");
-  }
+}
   

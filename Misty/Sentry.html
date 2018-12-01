@@ -17,6 +17,18 @@
 				<input type="text" id="ip-address" placeholder="IP Address" required />
 				<button type="button" id="connect">Connect</button>
 			</div>
+			<h3>Select Room Shape: </h3>
+			 <div class="custom-select" style="width:200px;" >
+			  <select onchange="changeShape()" id="shape-selection">
+			    <option value="notDefined">Shape:</option>
+			    <option value="rectangle">Rectangle</option>
+			    <option value="circle">Circle</option>
+			    <option value="lShape">L</option>
+			  </select>
+			</div>
+			<div class="">
+				
+			</div>
 			<h3>Command: </h3>
 			<div id="command">
 				<p>Begin Sentry Function</p>
