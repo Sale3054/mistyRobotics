@@ -1,0 +1,16 @@
+{
+	"Name": "sentry",
+	"UniqueId" : "f82fe437-9e15-40d2-98cc-83fcb36347c3",
+	"Description": "My skill is amazing!",
+	"StartupRules": ["Manual", "Robot"],
+	"Language": "javascript",
+	"BroadcastMode": "verbose",
+	"TimeoutInSeconds": 300,
+	"CleanupOnCancel": false,
+	"WriteToLog": false,
+	"Parameters": {
+		"int":10,
+		"double":20.5,
+		"string":"twenty"
+	}
+}

@@ -1,4 +1,7 @@
+
 misty.Debug("wander skill started");
+misty.MoveHeadPosition(5,0,0,100);
+misty.MoveHeadPosition(-5,0,0,100);
 
 misty.StartFaceRecognition();
 
