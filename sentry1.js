@@ -1,4 +1,8 @@
 
+misty.Set("eyeMemory", "Homeostasis.png");
+misty.Set("blinkStartTime",(new Date()).toUTCString());
+misty.Set("timeBetweenBlink",5);
+
 misty.Debug("wander skill started");
 misty.MoveHeadPosition(-5,0,0,100);
 
@@ -6,9 +10,16 @@ misty.StartFaceRecognition();
 
 var drive = true;
 
+function blink_now(){
+    misty.Debug("Calling Blink Now")
+    misty.Set("blinkStartTime",(new Date()).toUTCString());
+    misty.Set("timeBetweenBlink",getRandomInt(2, 8));
+    misty.ChangeDisplayImage("blinkMisty.png");
+    misty.Pause(200);
+    misty.ChangeDisplayImage(misty.Get("eyeMemory"));
+}
+
 // Issue commands to change LED and start driving
-//misty.ChangeLED(0, 255, 0); // green, GO!
-//misty.Drive(10, 0);
 
 // Register for TimeOfFlight data and add property tests
 
@@ -56,10 +67,26 @@ function _FrontTOF(data) {
     // misty.Debug("ending skill helloworld_timeofflight ");
 }
 
+// ------------------------------------------Supporting Functions------------------------------------------
+
+function secondsPast(value){
+	var timeElapsed = new Date() - new Date(value);
+    timeElapsed /= 1000;
+    return Math.round(timeElapsed); // seconds
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 
 register();
-while(drive) {
+while(true) {
+    misty.Debug("Seconds Past: " + secondsPast(misty.Get("blinkStartTime")))
+    if (secondsPast(misty.Get("blinkStartTime")) > misty.Get("timeBetweenBlink")){
+        
+        blink_now();
+	}
     //misty.Drive(10,0);
     misty.ChangeLED(0, 255, 0);
     misty.DriveTime(10,0,2000);
