@@ -1,0 +1,509 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Misty Skill Runner</title>
+	<script src="js/Popper/popper.js" type="text/javascript"></script>	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="../javascript/lightClient.js"></script>
+	<script src="../javascript/lightSocket.js"></script>
+	<link rel="stylesheet" href="css/bootstrap/dist/css/bootstrap.min.css" type="text/css" />
+	<link rel="stylesheet" href="css/default.css" type="text/css" />
+	<script src="css/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
+</head>
+<body>
+	<div class="robot-setup">
+		<nav class="navbar navbar-expand-xl sticky-top navbar-light bg-runner">
+			<img class="navbar-brand d-none d-md-block" src="Images/MistyRobotics.White.png" />
+			<img class="navbar-brand d-md-none" src="Images/MistySymbol.White.png" />
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<form id="setup" class="form-inline my-lg-0 ml-auto">
+					<input class="form-control mr-sm-2" id="ip-address" placeholder="Robot IP Address" aria-label="Search">
+					<button type="submit" class="btn btn-outline-light my-2 my-sm-0 ">Connect</button>
+				</form>
+			</div>
+		</nav>
+	</div>
+	<div id="content" class="mx-5">
+		<section class="d-flex flex-column pt-5">					
+			<h3 class="">Skill Runner</h3>
+			<section class="d-flex flex-column">
+				<div class="d-flex flex-row flex-wrap align-items-center mt-5">				
+					<div>
+						<form id="get-skills" class="form-inline">								
+							<button type="submit" class="btn btn-outline-primary robot-info-btn">Get Loaded Skills</button>
+						</form>
+					</div>
+					<div>
+						<form id="reload-skills" class="form-inline">
+							<button type="submit" class="btn btn-outline-primary robot-info-btn">Reload Skills</button>
+						</form>
+					</div>
+					<div >
+							<form id="cancel-all-skills" class="form-inline">								
+							<button type="submit" class="btn btn-outline-primary robot-info-btn">Cancel All Skills</button>
+						</form>
+					</div>
+					<div >
+						<div class="dropdown">
+							<button class="btn btn-outline-primary dropdown-toggle" type="button" id="mode-names-dropdown" data-toggle="dropdown"
+									aria-haspopup="true" aria-expanded="false">
+								Set Robot Mode
+							</button>
+							<ul id="mode-names" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+								<li class="dropdown-item"></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</section>
+			<hr />
+			<section class="d-flex flex-column">
+				<div class="d-flex flex-row flex-wrap align-items-center mt-5">
+					<div class="pr-5 col-lg-4 col-md-6 col-sm-12">
+						<label class="text-center">Run Skill</label>
+						<form id="run-skill">
+							<div class="form-group">
+								<input class="form-control drive-input" id="skill-name" placeholder="Skill Name">
+							</div>
+							<div class="form-group">
+								<input class="form-control" id="start-method" placeholder="Optional Start Method">
+							</div>
+							<div class="form-group">
+									<textarea class="form-control" id="parameters" placeholder='Optional parameters format:&#10;"KeyExample1": "ValueExample1",&#10;"KeyExample2": 1234'></textarea>
+								</div>
+							<div>
+								<button type="submit" class="btn btn-outline-primary submit form-control">Run</button>
+							</div>
+						</form>
+					</div>
+					<div class="pr-5 col-lg-4 col-md-6 col-sm-12">
+						<label class="text-center">Cancel Skill</label>
+						<form id="cancel-skill">
+							<div class="form-group">
+								<input class="form-control" id="cancel-skill-name" placeholder="Skill Name">
+							</div>
+							<div>
+								<button type="submit" class="btn btn-outline-primary submit form-control">Cancel</button>
+							</div>
+						</form>
+					</div>						
+				</div>
+			</section>
+			
+			<hr />
+			<section class="d-flex flex-column">
+				<div class="d-flex flex-row flex-wrap align-top">
+					<div class="pr-5 col-lg-4 col-md-6 col-sm-12">
+						<label class="text-center">Load Skill</label>
+						<form id="load-skill">
+							<div class="form-group">
+								<input class="form-control drive-input" id="load-skill-name" placeholder="Skill Name">
+							</div>
+							<div>
+								<button type="submit" class="btn btn-outline-primary submit form-control">Load</button>
+							</div>
+						</form>
+					</div>
+					<div class="pr-5 col-lg-4 col-md-6 col-sm-12">
+						<label class="text-center">Unload Skill</label>
+						<form id="unload-skill">
+							<div class="form-group">
+								<input class="form-control drive-input" id="unload-skill-name" placeholder="Skill Name">
+							</div>
+							<div>
+								<button type="submit" class="btn btn-outline-primary submit form-control">Unload</button>
+							</div>
+						</form>
+					</div>				
+					<hr />
+					<div class="pr-5 col-lg-4 col-md-6 col-sm-12">
+						<label class="text-center">Generate Meta Template</label>
+						<form id="generate-meta-template">
+							<div class="form-group">
+								<input class="form-control drive-input" id="generate-template-skill-name" placeholder="Skill Name">
+							</div>
+							<div>
+								<button type="submit" class="btn btn-outline-primary submit form-control">Generate Template</button>
+							</div>
+						</form>
+					</div>	
+					<div class="pr-5 col-lg-4 col-md-6 col-sm-12">
+						<label class="text-center">Save Skill To Robot</label>
+						<button class="btn btn-outline-primary form-control-file" id="save-skill-to-robot">Upload Zip File</button>
+						<input type="file" id="fileSelected" onchange="uploadSkillZip()" accept=".zip" onabort="fileSelectionCanceled()" />
+
+						
+						<label class="text-center">Unsubscribe From Skill Data</label>
+						<form id="unsubscribe-skill-data">
+							<div>
+								<button type="submit" class="btn btn-outline-primary submit form-control">Unsubscribe</button>
+							</div>
+						</form>
+					</div>		
+					<hr />
+					<div class="pr-5 col-lg-4 col-md-6 col-sm-12">
+						<label class="text-center">Send User Event</label>
+						<form id="user-event">
+							<div class="form-group">
+								<input class="form-control drive-input" id="event-skill-name" placeholder="Skill Name or Unique Id">
+							</div>
+							<div class="form-group">
+								<input class="form-control drive-input" id="event-name" placeholder="Event Name">
+							</div>
+							<div class="form-group">
+									<textarea class="form-control" id="event-payload" placeholder='Optional event payload format:&#10;"Data": "Green",&#10;"OtherData": 1234'></textarea>
+								</div>
+							<div>
+								<button type="submit" class="btn btn-outline-primary submit form-control">Run</button>
+							</div>
+						</form>
+					</div>					
+				</div>
+			</section>
+		</section>
+	</div>
+	<div id="toast"></div>	
+</body>
+</html>
+
+<script>	
+
+	async function showToastMessage(message, timeInMs = 4000) {
+		if (message) {
+			console.log(message);
+			var element = document.getElementById("toast");
+			var snackbar = $('#toast').html(message);
+			element.className = "show";
+			await sleep(timeInMs);
+			element.className = element.className.replace("show", "");
+		}
+	}
+
+	$("#save-skill-to-robot").on("click", function () {
+		$("input#fileSelected").trigger("click");
+	});
+
+	function uploadSkillZip() {
+		var file = document.getElementById("fileSelected").files[0];
+		var ip = $("#ip-address").val();
+
+		if (!ip) {
+			showToastMessage("Please enter a valid IP or name.");
+			return;
+		}
+
+		var data = new FormData();
+		data.append("File", file);
+		data.append("OverwriteExisting", true);
+		data.append("ImmediatelyApply", true);
+
+		var xhr = new XMLHttpRequest();
+		xhr.addEventListener('load', function (event) {
+			console.log("Skill command response: " + JSON.stringify(event.target.response));
+		});
+
+		
+		xhr.open('POST', 'http://' + ip + '/api/alpha/sdk/skill/deploy');
+		xhr.send(data);
+		document.getElementById("fileSelected").value = "";
+	}
+
+	$("#setup").submit(async function (e) {
+		e.preventDefault();
+		var ip = $("#ip-address").val();
+
+		if (!ip) {
+			showToastMessage("Please enter a valid IP or name.");
+			return;
+		}
+		await RunMe(ip);
+	});
+
+	
+	$("#user-event").submit(function (e) {
+		e.preventDefault();
+		var ip = $("#ip-address").val();
+		var skillName = $("#event-skill-name").val();
+		var eventName = $("#event-name").val();
+		var payload = $("#event-payload").val();
+		
+		if (!ip) {
+			showToastMessage("Please enter a valid IP or name.");
+			return;
+		}
+
+		if (!skillName) {
+			showToastMessage("Please enter the name of a skill to run.");
+			return;
+		}
+
+		if (!eventName) {
+			showToastMessage("Please enter the name of the event to send.");
+			return;
+		}
+
+		showToastMessage("Sending event '" + eventName + "' to '" + skillName + "'.");
+
+		var lightClient = new LightClient(ip, 10000);
+		lightClient.PostCommand("alpha/sdk/skills/event", " {\"Skill\":\"" + skillName + "\", \"EventName\":\"" + eventName + "\", \"Payload\": {" + payload + "} }", function (data) { console.log("User event response for event " + eventName +" :" + JSON.stringify(data)); });
+
+	});
+
+	$("#run-skill").submit(function (e) {
+		e.preventDefault();
+		var ip = $("#ip-address").val();
+		var skillName = $("#skill-name").val();
+		var skillMethod = $("#start-method").val();
+		var parameters = $("#parameters").val();
+		
+		if (!ip) {
+			showToastMessage("Please enter a valid IP or name.");
+			return;
+		}
+
+		if (!skillName) {
+			showToastMessage("Please enter the name of a skill to run.");
+			return;
+		}
+
+		showToastMessage("Running Skill '" + skillName + "'.");
+		var lightClient = new LightClient(ip, 10000);
+
+		var methodJson = skillMethod && skillMethod.trim() != "" ? ",\"Method\":\"" + skillMethod + "\"" : "";
+		var parameterJson = parameters && parameters.trim() != "" ? "," + parameters : "";
+
+		lightClient.PostCommand("alpha/sdk/skill", " {\"Skill\":\"" + skillName + "\"" + methodJson + parameterJson + "}", function (data) { console.log("Skill command response: " + skillMethod + "..." + JSON.stringify(data)); });
+
+	});
+
+	$("#cancel-skill").submit(function (e) {
+		e.preventDefault();
+		var ip = $("#ip-address").val();
+		var skillName = $("#cancel-skill-name").val();
+
+		if (!ip) {
+			showToastMessage("Please enter a valid IP or name");
+			return;
+		}
+
+		if (!skillName) {
+			showToastMessage("Please enter the name of a skill to cancel or select Cancel All Skills.");
+			return;
+		}
+
+		showToastMessage("Cancelling Skill '" + skillName + "'...");
+		var lightClient = new LightClient(ip, 10000);
+		lightClient.PostCommand("alpha/sdk/skills/cancel", " {\"Skill\":\"" + skillName + "\"}", function (data) { console.log("Skill command response: " +JSON.stringify(data)); });
+	});
+
+	$("#cancel-all-skills").submit(function (e) {
+		e.preventDefault();
+		var ip = $("#ip-address").val();
+
+		if (!ip) {
+			showToastMessage("Please enter a valid IP or name.");
+			return;
+		}
+		showToastMessage("Attempting to Cancel All Running Skills...");
+		var lightClient = new LightClient(ip, 10000);
+		lightClient.PostCommand("alpha/sdk/skills/cancel", " {}", function (data) { console.log("Skill command response: " + JSON.stringify(data)); });
+		lightClient.PostCommand("drive/stop", " {}", function (data) { console.log("Stop response: " + JSON.stringify(data)); });
+	});
+
+	
+	$("#generate-meta-template").submit(function (e) {
+		e.preventDefault();
+		var skillName = $("#generate-template-skill-name").val();
+
+		if (!skillName) {
+			showToastMessage("Please enter the name of the new skill.");
+			return;
+		}
+
+		showToastMessage("Generating and downloading meta template for '" + skillName + "'...");
+
+		var template = '{\n\t"Name": "' + skillName + '",\n\t"UniqueId" : "' + uuidv4() + '",\n\t"Description": "My skill is amazing!",\n\t"StartupRules": ["Manual", "Robot"],\n\t"Language": "javascript",\n\t"BroadcastMode": "verbose",\n\t"TimeoutInSeconds": 300,\n\t"CleanupOnCancel": false,\n\t"WriteToLog": false,\n\t"Parameters": {\n\t\t"int":10,\n\t\t"double":20.5,\n\t\t"string":"twenty"\n\t}\n}';
+		var a = window.document.createElement('a');
+					a.href = window.URL.createObjectURL(new Blob([template], {type: 'text/txt'}));
+					a.download = skillName + '.json';
+					document.body.appendChild(a);
+					a.click();
+					document.body.removeChild(a);
+
+	});
+
+	$("#unload-skill").submit(function (e) {
+		e.preventDefault();
+		var ip = $("#ip-address").val();
+		var skillName = $("#unload-skill-name").val();
+
+		if (!ip) {
+			showToastMessage("Please enter a valid IP or name.");
+			return;
+		}
+
+		if (!skillName) {
+			showToastMessage("Please enter the name of a skill to unload.");
+			return;
+		}
+
+		showToastMessage("Unloading Skill '" + skillName + "'...");
+		var lightClient = new LightClient(ip, 10000);
+		lightClient.PostCommand("alpha/sdk/skills/unload", " {\"Skill\":\"" + skillName + "\"}", function (data) { console.log("Skill command response: " + JSON.stringify(data)); });
+	});
+
+	$("#load-skill").submit(function (e) {
+		e.preventDefault();
+		var ip = $("#ip-address").val();
+		var skillName = $("#load-skill-name").val();
+
+		if (!ip) {
+			showToastMessage("Please enter a valid IP or name.");
+			return;
+		}
+
+		if (!skillName) {
+			showToastMessage("Please enter the name of a skill to load.");
+			return;
+		}
+
+		showToastMessage("Loading Skill '" + skillName + "'...");
+		var lightClient = new LightClient(ip, 10000);
+		lightClient.PostCommand("alpha/sdk/skills/load", " {\"Skill\":\"" + skillName + "\"}", function (data) { console.log("Skill command response: " + JSON.stringify(data)); });
+	});
+
+	$("#unsubscribe-skill-data").submit(function (e) {
+		e.preventDefault();
+		var ip = $("#ip-address").val();
+		if (!ip) {
+			showToastMessage("Please enter a valid IP or name.");
+			return;
+		}
+		var lightSocket = new LightSocket(ip);
+		showToastMessage("Unsubscribing from skill data...");
+		lightSocket.Unsubscribe("SkillRunnerData"); 		
+	});
+
+	$("#reload-skills").submit(function (e) {
+		e.preventDefault();
+		var ip = $("#ip-address").val();
+		if (!ip) {
+			showToastMessage("Please enter a valid IP or name.");
+			return;
+		}
+
+		showToastMessage("The robot is attempting to reload skills, this may take a minute...");
+		var lightClient = new LightClient(ip, 10000);
+		lightClient.PostCommand("alpha/sdk/reload", " {}", 
+			function (data) { 
+				console.log("Skills reloading... " + JSON.stringify(data)); 
+ 
+		});
+	});
+
+	$("#mode-names-dropdown").on("click", function () {
+		var ip = $("#ip-address").val();
+		if (!ip) {
+			showToastMessage("Please enter a valid IP or name.");
+			return;
+		}
+
+		$("#mode-names").empty();
+		$('#mode-names').append($('<li class="dropdown-item"></li>').html("Autonomous"));
+		$('#mode-names').append($('<li class="dropdown-item"></li>').html("Deterministic"));
+		$('#mode-names').append($('<li class="dropdown-item"></li>').html("Stochastic"));
+	});
+
+	$('#mode-names').on('click', 'li', function () {
+	
+		var ip = $("#ip-address").val();
+		var modeName = ($(this).text());
+		$("#mode-names-dropdown").text(modeName);
+
+		if (!ip) {
+			showToastMessage("Please enter a valid IP or name.");
+			return;
+		}
+
+		showToastMessage("Setting Robot to " + modeName + " Mode...");
+		var lightClient = new LightClient(ip, 10000);
+		lightClient.PostCommand("alpha/robotmode", " {\"RobotMode\":\"" + modeName + "\"}", function (data) { console.log("Skill command response: " + JSON.stringify(data)); });
+	});
+
+	$("#get-skills").submit(function (e) {
+		e.preventDefault();
+		var ip = $("#ip-address").val();
+		if (!ip) {
+			showToastMessage("Please enter a valid IP or name");
+			return;
+		}
+
+		showToastMessage("Retrieving skills... detailed information will display in the console.");
+		var lightClient = new LightClient(ip, 10000);
+		lightClient.GetCommand("alpha/sdk/skills", function (data) { console.log("Retrieving skills (not reloading)... ", JSON.stringify(data)); });
+	});
+
+	function uuidv4() {
+		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+			var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+			return v.toString(16);
+		});
+	}
+
+	async function RunMe(ip) {
+		var lightSocket = new LightSocket(ip);
+		console.log("Connecting to skill websocket...");
+		//Setup the websockets
+		lightSocket.Connect();
+		showToastMessage("Connecting to skill websocket, view the console for socket status and logging information...", 5000);
+		await sleep(5000);//give it time to connect before attempting to subscribe, update for callback
+		lightSocket.Subscribe("SkillRunnerData", "SkillData", 0, null, null, null, null, 
+			function (data) { 
+				var printDetails = true;
+				if(data === null || data === undefined || data.message === null || data.message === undefined || (data.message.data === undefined && data.message.message === undefined)) {
+					printDetails = false;
+				}
+					
+				var objectData = data.message.data === undefined || data.message.data === null ?  data.message :  data.message.data;
+				var messageString = data.message.message === undefined || data.message.message === null ? "" : data.message.message;
+
+				if (messageString.includes("Failed ") ||
+					messageString.includes("Compile error") || 
+					messageString.includes("Failed ") ||
+					messageString.includes("Script error")) 
+				{
+					//Error
+					console.log(JSON.stringify("%c" + data.message.message + " " + data.message.timestamp), "color:#FF0000"); 							
+				}
+				else if (messageString.includes("Calling command")) {
+					//From Verbose BroadcaseMode
+					console.log(JSON.stringify("%c" + data.message.message + " " + data.message.timestamp), "color:#008000"); 
+				}
+				else if (messageString.includes("Debug:")) {
+					//From Verbose User Debug Statement and in Verbose, Debug, or All BroadcastMode
+					console.log(JSON.stringify("%c" + data.message.message + " " + data.message.timestamp), "color:#0000FF"); 
+				}
+				else if(printDetails) {
+					console.log(JSON.stringify("%c" + data.message.message + " " + data.message.timestamp), "color:#FFA500");
+				}	
+				
+				try {
+					console.log(JSON.parse(objectData));				
+				}
+				catch{
+					console.log(objectData);	
+				}
+			});
+	}
+
+	function sleep(ms) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+	
+</script>
