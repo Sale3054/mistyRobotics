@@ -1,0 +1,12 @@
+{ 
+"Name": "HelloWorldpart1_TimeOfFlight", 
+"UniqueId": "e46c1b29-9d46-4f38-945f-673fa4b7c2bd", 
+"Description": "Local 'Hello, World!' tutorial series, part 1.", 
+"StartupRules": [ "Manual", "Robot" ], 
+"Language": "javascript", 
+"BroadcastMode": "verbose", 
+"TimeoutInSeconds": 300, 
+"CleanupOnCancel": false, 
+"WriteToLog": false
+}
+
