@@ -74,9 +74,12 @@ function _FaceRec(data){
         misty.Debug("Intruder Detected !!");
         misty.PlayAudioClip("002-Ahhh.wav");
         misty.ChangeDisplayImage("Disdainful.png");
+        misty.SaveImageAssetToRobot(misty.TakePicture());
+        ;
     } else {
         misty.Debug(data.PropertyTestResults[0].PropertyValue);
         misty.PlayAudioClip("032-Bewbewbeeew.wav");
+        misty.ChangeDisplayImage("Happy.png");
 
     }
 }
