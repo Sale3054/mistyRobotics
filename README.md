@@ -9,3 +9,21 @@ Project repo for CU Boulder's 2018-2019 Senior Projects...project for Misty Robo
 * File Explorer/Device Portal: Misty_IP:8080
     * Username: Administrator
     * PW: p@ssw0rd 
+* [List of changes](https://community.mistyrobotics.com/t/4-17-19-release-notes/1345)
+* [New Skill-runner](http://skill-runner.mistyrobotics.com/)
+* [List of REST commands](https://docs.mistyrobotics.com/docs/reference/rest/#reloadskills-alpha)
+
+We require POSTMAN to successfully run the code now. 
+
+In order to _run_ a command:
+`POST <IP ADDRESS>/api/skills/start`
+
+With this in the body:
+```
+{
+  "Skill": "16ea6f03-fb87-44d2-8127-ed81e37c26ac"
+}
+```
+Note that the Skill's ID is what is invoked to run the process. In order to retrieve a list of skills s.t. you may run them you need to do: `GET <IP ADDRESS>/api/skills`
+
+The skills are now being uploaded to `User Folders \ Music \ Skills \ Code \`
