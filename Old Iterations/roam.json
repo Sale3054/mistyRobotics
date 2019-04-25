@@ -1,0 +1,16 @@
+{
+	"Name": "roam",
+	"UniqueId" : "f56e9fcb-6ba9-45dc-a547-c05f6c5b9457",
+	"Description": "My skill is amazing!",
+	"StartupRules": ["Manual", "Robot"],
+	"Language": "javascript",
+	"BroadcastMode": "verbose",
+	"TimeoutInSeconds": 300,
+	"CleanupOnCancel": false,
+	"WriteToLog": false,
+	"Parameters": {
+		"int":10,
+		"double":20.5,
+		"string":"twenty"
+	}
+}
