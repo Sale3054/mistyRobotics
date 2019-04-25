@@ -10,7 +10,7 @@ Project repo for CU Boulder's 2018-2019 Senior Projects...project for Misty Robo
     * Username: Administrator
     * PW: p@ssw0rd 
 * [List of changes](https://community.mistyrobotics.com/t/4-17-19-release-notes/1345)
-* [New Skill-runner](http://skill-runner.mistyrobotics.com/)
+* [New Skill-runner](http://sdk.mistyrobotics.com/skill-runner/)
 * [List of REST commands](https://docs.mistyrobotics.com/docs/reference/rest/#reloadskills-alpha)
 
 We require POSTMAN to successfully run the code now. 
