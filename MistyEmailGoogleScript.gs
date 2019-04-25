@@ -1,7 +1,3 @@
-// This is the script running in a Google Web App that is called in order to send out emails
-// A call is of the form:
-// POST https://script.google.com/macros/s/{uniqueId}/exec?email=example@example.com&mode=intruder
-
 function
 doPost(e)
 {
@@ -14,28 +10,38 @@ doPost(e)
   var email = e.parameter["email"];
   var mode  = e.parameter["mode"];
   
+  var base64 = e.postData.contents;
+  var img_str = '<html><body><img src="data:image/jpeg;base64,'+base64+'"></body></html>';
+  var blob = Utilities.newBlob(img_str, 'text/html', 'event_image.html');
+  
   var subject;
   var message;
-  
   switch (mode)
   {
     case "intruder":
       subject = "Misty Detected An Intruder";
-      message = "At " + (new Date).toUTCString() + ", Misty detected an intruder.";
+      message = "At " + (new Date).toLocaleString() + ", Misty detected an intruder.\n";
       break;
       
-    // TODO
     case "toohot":
-      subject = "";
-      message = "";
+      subject = "Misty Detected High Temperatures";
+      message = "At " + (new Date).toLocaleString() + ", Misty detected high temperatures.\n";
       break;
       
-    // TODO: add others here
+    case "toohumid":
+      subject = "Misty Detected High Humidity";
+      message = "At " + (new Date).toLocaleString() + ", Misty detected high humidity.\n";
+      break;
       
     default:
       return HtmlService.createHtmlOutput("ERROR: Unrecognized mode");
   }
   
-  MailApp.sendEmail(email, subject, message);
+  MailApp.sendEmail({
+    to:email, 
+    subject: subject,   
+    body: message,
+    attachments: [blob]
+  });
   return HtmlService.createHtmlOutput("SUCCESS: Email sent");
 }
