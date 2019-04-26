@@ -117,7 +117,7 @@ function _SerialMessage(data) {
         var temp = obj.temperature;
         var pressure = obj.pressure;
 		misty.Debug("Temperature: " + temp);
-		misty.Debug("Pressure: " + pressure);
+		misty.Debug("Humidity: " + pressure);
     }
 }
 
