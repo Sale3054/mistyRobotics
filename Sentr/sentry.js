@@ -16,14 +16,14 @@ function look_around(){
     misty.Set("lookStartTime",(new Date()).toUTCString());
     misty.Set("timeInLook",getRandomInt(5, 10));
     misty.Debug("Looking around");
-    misty.Drive(0, 20);
+    misty.Drive(0, 20,0,2000);
     // misty.Pause(1000);
-    misty.Drive(0,0,0, 2000);
-    misty.Drive(0, -40);
+    // misty.Drive(0,0,0, 2000);
+    misty.Drive(0, -40,0,2000);
     // misty.Pause(1000);
-    misty.Drive(0, 0, 0, 2000);
-    misty.Drive(0, 20);
-    misty.Drive(0, 0, 0, 2000);
+    // misty.Drive(0, 0, 0, 2000);
+    misty.Drive(0, 20,0,2000);
+    // misty.Drive(0, 0, 0, 2000);
 }
 
 function sendText(){
@@ -76,6 +76,8 @@ function registerAll() {
     misty.AddPropertyTest("FaceRec", "PersonName", "exists", "", "string");
     misty.RegisterEvent("FaceRec", "FaceRecognition", 1000, true);
 
+    misty.AddReturnProperty("SerialMessage", "SerialMessage");
+    misty.RegisterEvent("SerialMessage", "SerialMessage", 0, true);
 }
 
 function _FaceRec(data){
@@ -102,6 +104,20 @@ function _FaceRec(data){
         misty.PlayAudio("032-Bewbewbeeew.wav");
 
 
+    }
+}
+
+function _SerialMessage(data) {
+  // misty.Debug("Called Serial Message");
+    if(data !== undefined && data !== null)
+    {
+    // misty.Debug("It was not undefined");
+        // Parse StringMessage data and assign it to a variable
+        var obj = JSON.parse(data.AdditionalResults[0].Message);
+        var temp = obj.temperature;
+        var pressure = obj.pressure;
+		misty.Debug("Temperature: " + temp);
+		misty.Debug("Pressure: " + pressure);
     }
 }
 
@@ -233,9 +249,9 @@ while(true)
 {
     //wait for misty to begin next cycle, give it time to think
     misty.Pause(50);
-    if (secondsPast(misty.Get("lookStartTime")) > misty.Get("timeInLook")){
-        look_around();
-    }
+    // if (secondsPast(misty.Get("lookStartTime")) > misty.Get("timeInLook")){
+    //     look_around();
+    // }
 
     // Wander - tof
     if (misty.Get("tofTriggered")){
@@ -244,12 +260,12 @@ while(true)
             registerAll();
         }
     }
-        //Wander - drive
-    // if (secondsPast(misty.Get("driveStartAt")) > misty.Get("timeInDrive") && !misty.Get("tofTriggered")){
-        // misty.Set("driveStartAt",(new Date()).toUTCString());
-        // misty.Drive(getRandomInt(20,25), getRandomInt(-35,35));
-        // misty.Set("timeInDrive", getRandomInt(3, 8));
-// }
+    //Wander - drive
+    if (secondsPast(misty.Get("driveStartAt")) > misty.Get("timeInDrive") && !misty.Get("tofTriggered")){
+        misty.Set("driveStartAt",(new Date()).toUTCString());
+        misty.Drive(getRandomInt(20,25), getRandomInt(-35,35));
+        misty.Set("timeInDrive", getRandomInt(3, 8));
+    }
 }
 
 function unregisterAll()
