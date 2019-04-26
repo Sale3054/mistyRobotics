@@ -85,11 +85,10 @@ function _FaceRec(data){
     if (data.PropertyTestResults[0].PropertyValue == "unknown person"){
         misty.Debug("Intruder Detected !!");
         // misty.Pause(50);
-        misty.PlayAudio("intruder-alert.wav");
         // misty.SaveImageAssetToRobot(misty.TakePicture());
         misty.Debug(secondsPast(misty.Get("emailSent")));
         if (secondsPast(misty.Get("emailSent")) > 5){
-            // sendEmail();
+            misty.PlayAudio("intruder-alert.wav");
             misty.TakePicture(true, "intruderPIC", 1200, 1600, false, true);
             misty.Set("emailSent",(new Date()).toUTCString());
             misty.Debug("Email sent");
@@ -111,13 +110,19 @@ function _SerialMessage(data) {
   // misty.Debug("Called Serial Message");
     if(data !== undefined && data !== null)
     {
-    // misty.Debug("It was not undefined");
+        // misty.Debug("It was not undefined");
         // Parse StringMessage data and assign it to a variable
         var obj = JSON.parse(data.AdditionalResults[0].Message);
         var temp = obj.temperature;
-        var pressure = obj.pressure;
-		misty.Debug("Temperature: " + temp);
-		misty.Debug("Humidity: " + pressure);
+        var humidity = obj.pressure;
+    		misty.Debug("Temperature: " + temp);
+    		misty.Debug("Humidity: " + humidity);
+        if(temp > 50){
+          sendEmail('0','hot', temp, humidity);
+        }
+        if(humidity > 50){
+          sendEmail('0', 'wet', temp, humidity);
+        }
     }
 }
 
@@ -125,7 +130,7 @@ function _TakePicture(data){
   misty.Debug("Taking a picture");
 	var base64Image = data.Result.Base64;
   	misty.Debug(base64Image);
-  	sendEmail(base64Image);
+  	sendEmail(base64Image, 'intruder');
 }
 
 function _BackTOF(data)
@@ -197,16 +202,17 @@ function _RightTOF(data) {
 
 // ------------------------------------------Supporting Functions------------------------------------------
 
-function sendEmail(imageBase64){
+function sendEmail(imageBase64, mode, temp, humidity){
     misty.Debug("Sending Email");
     var imageBase64Correct = imageBase64.substr(23)
+    var temperature = 0;
+    var humidity = 0;
     const user_email = "joseph.wroe@colorado.edu";
-    const mode = "intruder";
     const appURL = "https://script.google.com/macros/s/AKfycbyK8HjMdcJ_eMRiMdS3hzR_6I2p4puHYwithe8UguejkPxPTuBZ/exec";
     try {
 	    misty.SendExternalRequest(
 	        "POST",
-	        appURL + "?email=" + user_email + "&mode=" + mode, // resourceURL
+	        appURL + "?email=" + user_email + "&mode=" + mode + '&humidity='+ humidity + '&temp=' + temperature, // resourceURL
 	        null, // authorizationType
 	        null, // token
 	        "text/html", // returnType
