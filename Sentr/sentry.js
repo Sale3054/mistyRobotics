@@ -9,6 +9,7 @@ misty.Set("lookStartTime",(new Date()).toUTCString());
 misty.Set("timeInLook",6.0);
 misty.Set("emailSent",(new Date()).toUTCString());
 misty.Set("textSent", (new Date()).toUTCString());
+misty.Set("climateSent", (new Date()).toUTCString());
 
 //------------------------------------------Look Around-----------------------------------------------------
 
@@ -27,26 +28,26 @@ function look_around(){
 }
 
 function sendText(){
-            misty.SendExternalRequest(
-                "POST",
-                "https://textbelt.com/text",
-                null,
-                null,
-                null,
-                JSON.stringify({
-                    phone: '2678843378',
-                    message: 'Hello world',
-                    key: 'textbelt'
-                }),
-                false,
-                false,
-                null,
-                null, /*callbackMethod*/
-                null, /*callbackRule*/
-                null, /*skillToCallOnCallback*/
-                0, /*prePause*/
-                0/*postPause*/
-            );
+    misty.SendExternalRequest(
+        "POST",
+        "https://textbelt.com/text",
+        null,
+        null,
+        null,
+        JSON.stringify({
+            phone: '2678843378',
+            message: 'Hello world',
+            key: 'textbelt'
+        }),
+        false,
+        false,
+        null,
+        null, /*callbackMethod*/
+        null, /*callbackRule*/
+        null, /*skillToCallOnCallback*/
+        0, /*prePause*/
+        0/*postPause*/
+    );
 
 }
 // Issue commands to change LED and start driving
@@ -101,8 +102,6 @@ function _FaceRec(data){
     } else {
         misty.Debug(data.PropertyTestResults[0].PropertyValue);
         misty.PlayAudio("032-Bewbewbeeew.wav");
-
-
     }
 }
 
@@ -115,13 +114,20 @@ function _SerialMessage(data) {
         var obj = JSON.parse(data.AdditionalResults[0].Message);
         var temp = obj.temperature;
         var humidity = obj.pressure;
-    		misty.Debug("Temperature: " + temp);
-    		misty.Debug("Humidity: " + humidity);
-        if(temp > 50){
-          sendEmail('0','hot', temp, humidity);
-        }
-        if(humidity > 50){
-          sendEmail('0', 'wet', temp, humidity);
+
+        misty.Debug("Temperature: " + temp);
+        misty.Debug("Humidity: " + humidity);
+
+        if (secondsPast(misty.Get("climateSent")) > 20){
+            if(temp > 50){
+              sendEmail(temp, 'toohot');
+              misty.Debug("Climate Sent.");
+            }
+            if(humidity > 50){
+              sendEmail(humidity, 'toohumid');
+              misty.Debug("Climate Sent.");
+            }
+            misty.Set("climateSent", (new Date()).toUTCString());
         }
     }
 }
@@ -135,7 +141,7 @@ function _TakePicture(data){
 
 function _BackTOF(data)
 {
-    misty.Debug("Back sensor: ");
+    misty.Debug("Back TOF triggered");
     unregisterALL();
     misty.Set("tofTriggeredAt", (new Date()).toUTCString());
     misty.Set("tofTriggered", true);
@@ -202,33 +208,54 @@ function _RightTOF(data) {
 
 // ------------------------------------------Supporting Functions------------------------------------------
 
-function sendEmail(imageBase64, mode, temp, humidity){
+function sendEmail(data, mode){
     misty.Debug("Sending Email");
-    var imageBase64Correct = imageBase64.substr(23)
-    var temperature = 0;
-    var humidity = 0;
-    const user_email = "joseph.wroe@colorado.edu";
+    const user_email = "samuel.leon@colorado.edu";
     const appURL = "https://script.google.com/macros/s/AKfycbyK8HjMdcJ_eMRiMdS3hzR_6I2p4puHYwithe8UguejkPxPTuBZ/exec";
-    try {
-	    misty.SendExternalRequest(
-	        "POST",
-	        appURL + "?email=" + user_email + "&mode=" + mode + '&humidity='+ humidity + '&temp=' + temperature, // resourceURL
-	        null, // authorizationType
-	        null, // token
-	        "text/html", // returnType
-            imageBase64Correct, // jsonArgs
-	        false, // saveAssetToRobot
-	        false, // applyAssetAfterSaving
-	        null, // fileName
-	        null, // callbackMethod
-	        null, // callbackRule
-	        null, // skillToCallOnCallback
-	        0, // prePause
-	        0  // postPause
-	    );
-	} catch (error) {
-		Misty.Debug(error);
-	}
+    if (mode == 'intruder'){
+        var data = data.substr(23)
+        try {
+            misty.SendExternalRequest(
+                "POST",
+                appURL + "?email=" + user_email + "&mode=" + mode, // resourceURL
+                null, // authorizationType
+                null, // token
+                "text/html", // returnType
+                data, // jsonArgs
+                false, // saveAssetToRobot
+                false, // applyAssetAfterSaving
+                null, // fileName
+                null, // callbackMethod
+                null, // callbackRule
+                null, // skillToCallOnCallback
+                0, // prePause
+                0  // postPause
+            );
+        } catch (error) {
+            Misty.Debug(error);
+        }
+    } else {
+        try {
+    	    misty.SendExternalRequest(
+    	        "POST",
+    	        appURL + "?email=" + user_email + "&mode=" + mode + '&data='+ data, // resourceURL
+    	        null, // authorizationType
+    	        null, // token
+    	        "text/html", // returnType
+                null, // jsonArgs
+    	        false, // saveAssetToRobot
+    	        false, // applyAssetAfterSaving
+    	        null, // fileName
+    	        null, // callbackMethod
+    	        null, // callbackRule
+    	        null, // skillToCallOnCallback
+    	        0, // prePause
+    	        0  // postPause
+    	    );
+    	} catch (error) {
+    		Misty.Debug(error);
+    	}
+    }
 }
 
 
