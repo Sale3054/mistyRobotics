@@ -94,7 +94,7 @@ function CloudVisionAPI(imageBase64) {
     }]
   });
 
-  var requestUrl = 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyD8TfjKIDXYuaghY3j4k2j3wBeZiqAdeXs';
+  var requestUrl = 'https://vision.googleapis.com/v1/images:annotate?key=<API_KEY>';
   var response = UrlFetchApp.fetch(requestUrl, {
     method: 'POST',
     contentType: 'application/json',
