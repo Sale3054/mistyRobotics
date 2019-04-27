@@ -1,6 +1,6 @@
 misty.Debug("Sentry Skill started");
 // raise head to look for faces
-misty.MoveHeadPosition(-5,0,0,100);
+misty.MoveHeadPosition(0,0,0,100);
 misty.StartFaceDetection();
 misty.StartFaceRecognition();
 misty.Set("StartTime", (new Date()).toUTCString());
@@ -210,7 +210,7 @@ function _RightTOF(data) {
 
 function sendEmail(data, mode){
     misty.Debug("Sending Email");
-    const user_email = "samuel.leon@colorado.edu";
+    const user_email = "tyler.mooney@colorado.edu";
     const appURL = "https://script.google.com/macros/s/AKfycbyK8HjMdcJ_eMRiMdS3hzR_6I2p4puHYwithe8UguejkPxPTuBZ/exec";
     if (mode == 'intruder'){
         var data = data.substr(23)
