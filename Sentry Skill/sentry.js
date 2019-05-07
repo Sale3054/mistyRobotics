@@ -1,59 +1,58 @@
 misty.Debug("Sentry Skill started");
 // raise head to look for faces
-misty.MoveHeadPosition(-5,0,0,100);
-//Subscribe to facial detection
+misty.MoveHeadPosition(0,0,0,100);
+//subscribe to facial recognition
 misty.StartFaceDetection();
 misty.StartFaceRecognition();
+//initialize important variables, so we don't spam the recipient
 misty.Set("StartTime", (new Date()).toUTCString());
 misty.Set("alarm", false);
 misty.Set("lookStartTime",(new Date()).toUTCString());
 misty.Set("timeInLook",6.0);
 misty.Set("emailSent",(new Date()).toUTCString());
 misty.Set("textSent", (new Date()).toUTCString());
-
-//------------------------------------------Look Around-----------------------------------------------------
+misty.Set("climateSent", (new Date()).toUTCString());
 
 function look_around(){
     misty.Set("lookStartTime",(new Date()).toUTCString());
     misty.Set("timeInLook",getRandomInt(5, 10));
-    //turn
-    misty.Drive(0, 20);
-    //wait
-    misty.Drive(0,0,0, 2000);
-    //turn back the other way
-    misty.Drive(0, -40);
-    //wait
-    misty.Drive(0, 0, 0, 2000);
-    //reset to center
-    misty.Drive(0, 20);
-    //wait
-    misty.Drive(0, 0, 0, 2000);
+    misty.Debug("Looking around");
+    misty.Drive(0, 20,0,2000);
+    // misty.Pause(1000);
+    // misty.Drive(0,0,0, 2000);
+    misty.Drive(0, -40,0,2000);
+    // misty.Pause(1000);
+    // misty.Drive(0, 0, 0, 2000);
+    misty.Drive(0, 20,0,2000);
+    // misty.Drive(0, 0, 0, 2000);
 }
 
 function sendText(){
-            misty.SendExternalRequest(
-                "POST",
-                "https://textbelt.com/text",
-                null,
-                null,
-                null,
-                JSON.stringify({
-                    phone: 'ENTER-YOUR-PHONE-#-HERE',
-                    message: 'Hello world',
-                    key: 'textbelt'
-                }),
-                false,
-                false,
-                null,
-                null, /*callbackMethod*/
-                null, /*callbackRule*/
-                null, /*skillToCallOnCallback*/
-                0, /*prePause*/
-                0/*postPause*/
-            );
+    misty.SendExternalRequest(
+        "POST",
+        "https://textbelt.com/text",
+        null,
+        null,
+        null,
+        JSON.stringify({
+            phone: 'INSERT-PHONE-NUMBER-HERE',
+            message: 'Hello world',
+            key: 'textbelt'
+        }),
+        false,
+        false,
+        null,
+        null, /*callbackMethod*/
+        null, /*callbackRule*/
+        null, /*skillToCallOnCallback*/
+        0, /*prePause*/
+        0/*postPause*/
+    );
 
 }
 // Issue commands to change LED and start driving
+
+// Register for TimeOfFlight data and add property tests
 
 // Register for TimeOfFlight data and add property tests
 function registerAll() {
@@ -82,24 +81,18 @@ function unregisterAll(){
   }
 }
 
-
 function _FaceRec(data){
-    // if the data received returns a person that is unknown
+    misty.Debug("Handling face recognition event");
     if (data.PropertyTestResults[0].PropertyValue == "unknown person"){
         misty.Debug("Intruder Detected !!");
-        //Play the intruder-alert sound that is packaged within our files
-        misty.PlayAudio("intruder-alert.wav");
-        //print how long it has been since we have sent a message
         misty.Debug(secondsPast(misty.Get("emailSent")));
-        //if it's been at least 60 seconds since we have sent an email, send one with a picture
-        if (secondsPast(misty.Get("emailSent")) > 60){
+        if (secondsPast(misty.Get("emailSent")) > 5){
+            misty.PlayAudio("intruder-alert.wav");
             misty.TakePicture(true, "intruderPIC", 1200, 1600, false, true);
-            //update the last time we have sent an email
             misty.Set("emailSent",(new Date()).toUTCString());
             misty.Debug("Email sent");
         }
-        if (secondsPast(misty.Get("textSent")) > 60){
-          //if it's been at least a minute since we've sent a text, send a text
+        if (secondsPast(misty.Get("textSent")) > 5){
           sendText();
           misty.Set("textSent", (new Date()).toUTCString());
           misty.Debug("Text sent");
@@ -107,16 +100,38 @@ function _FaceRec(data){
     } else {
         misty.Debug(data.PropertyTestResults[0].PropertyValue);
         misty.PlayAudio("032-Bewbewbeeew.wav");
+    }
+}
 
+function _SerialMessage(data) {
+    if(data !== undefined && data !== null)
+    {
+        var obj = JSON.parse(data.AdditionalResults[0].Message);
+        var temp = obj.temperature;
+        var humidity = obj.pressure;
 
+        misty.Debug("Temperature: " + temp);
+        misty.Debug("Humidity: " + humidity);
+
+        if (secondsPast(misty.Get("climateSent")) > 20){
+            if(temp > 50){
+              sendEmail(temp, 'toohot');
+              misty.Debug("Climate Sent.");
+            }
+            if(humidity > 50){
+              sendEmail(humidity, 'toohumid');
+              misty.Debug("Climate Sent.");
+            }
+            misty.Set("climateSent", (new Date()).toUTCString());
+        }
     }
 }
 
 function _TakePicture(data){
-  //take a picture and send it to the registered email
+  misty.Debug("Taking a picture");
 	var base64Image = data.Result.Base64;
   	misty.Debug(base64Image);
-  	sendEmail(base64Image);
+  	sendEmail(base64Image, 'intruder');
 }
 
 function _BackTOF(data)
@@ -195,42 +210,62 @@ function _RightTOF(data) {
 
 // ------------------------------------------Supporting Functions------------------------------------------
 
-function sendEmail(imageBase64){
-    //Email
-    //take off the extra encoding information in the string (stuff that isn't actually the picture)
-    //but rather picture file info
-    var imageBase64Correct = imageBase64.substr(23)
-    //enter your credentials
+function sendEmail(data, mode){
+    misty.Debug("Sending Email");
     const user_email = "your.email@example.com";
-    const mode = "intruder";
-    const api_key = 'PUT-YOUR-GOOGLE-APPS-SCRIPT-API-KEY-HERE';
-    const appURL = "https://script.google.com/macros/s/"+api_key+"/exec";
-    //make the request
-    try {
-	    misty.SendExternalRequest(
-	        "POST",
-	        appURL + "?email=" + user_email + "&mode=" + mode, // resourceURL
-	        null, // authorizationType
-	        null, // token
-	        "text/html", // returnType
-            imageBase64Correct, // jsonArgs
-	        false, // saveAssetToRobot
-	        false, // applyAssetAfterSaving
-	        null, // fileName
-	        null, // callbackMethod
-	        null, // callbackRule
-	        null, // skillToCallOnCallback
-	        0, // prePause
-	        0  // postPause
-	    );
-	} catch (error) {
-		Misty.Debug(error);
-	}
+    const = api_key = 'Enter your google apps script API key here';
+    const appURL = "https://script.google.com/macros/s/"+ api_key + "/exec";
+    if (mode == 'intruder'){
+      //if the mode is intruder, try this:
+        var data = data.substr(23)
+        try {
+            misty.SendExternalRequest(
+                "POST",
+                appURL + "?email=" + user_email + "&mode=" + mode, // resourceURL
+                null, // authorizationType
+                null, // token
+                "text/html", // returnType
+                data, // jsonArgs
+                false, // saveAssetToRobot
+                false, // applyAssetAfterSaving
+                null, // fileName
+                null, // callbackMethod
+                null, // callbackRule
+                null, // skillToCallOnCallback
+                0, // prePause
+                0  // postPause
+            );
+        } catch (error) {
+            Misty.Debug(error);
+        }
+    } else {
+        try {
+          //otherwise, the email is being sent for humidity/temperature reasons, so use this form
+    	    misty.SendExternalRequest(
+    	        "POST",
+    	        appURL + "?email=" + user_email + "&mode=" + mode + '&data='+ data, // resourceURL
+    	        null, // authorizationType
+    	        null, // token
+    	        "text/html", // returnType
+                null, // jsonArgs
+    	        false, // saveAssetToRobot
+    	        false, // applyAssetAfterSaving
+    	        null, // fileName
+    	        null, // callbackMethod
+    	        null, // callbackRule
+    	        null, // skillToCallOnCallback
+    	        0, // prePause
+    	        0  // postPause
+    	    );
+    	} catch (error) {
+    		Misty.Debug(error);
+    	}
+    }
 }
 
 
 function secondsPast(value){
-  //calculate the seconds past since the passed-in value has occurred
+  // misty.Debug("Calculating seconds Past");
 	var timeElapsed = new Date() - new Date(value);
     timeElapsed /= 1000;
     return Math.round(timeElapsed); // seconds
@@ -238,12 +273,10 @@ function secondsPast(value){
 
 
 function getRandomInt(min, max) {
-    //calculate a random number in the range between max and min
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 // Next 5 Lines are the only lines for Wander outside loop
-//this gets things rolling
 misty.Set("tofTriggeredAt",(new Date()).toUTCString());
 misty.Set("tofTriggered", false);
 registerAll();
@@ -253,10 +286,10 @@ misty.Set("timeInDrive", getRandomInt(3, 8));
 while(true)
 {
     //wait for misty to begin next cycle, give it time to think
-    // misty.Pause(50);
-    // // if (secondsPast(misty.Get("lookStartTime")) > misty.Get("timeInLook")){
-    // //     look_around();
-    // // }
+    misty.Pause(50);
+    // if (secondsPast(misty.Get("lookStartTime")) > misty.Get("timeInLook")){
+    //     look_around();
+    // }
 
     // Wander - tof
     //register the sensors
@@ -266,8 +299,8 @@ while(true)
             registerAll();
         }
     }
-        //Wander - drive
-        //drive!
+    //Wander - drive
+    //start driving
     if (secondsPast(misty.Get("driveStartAt")) > misty.Get("timeInDrive") && !misty.Get("tofTriggered")){
         misty.Set("driveStartAt",(new Date()).toUTCString());
         misty.Drive(getRandomInt(20,25), getRandomInt(-35,35));
