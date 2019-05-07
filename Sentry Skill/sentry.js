@@ -17,14 +17,13 @@ function look_around(){
     misty.Set("lookStartTime",(new Date()).toUTCString());
     misty.Set("timeInLook",getRandomInt(5, 10));
     misty.Debug("Looking around");
+    //Turn
     misty.Drive(0, 20,0,2000);
-    // misty.Pause(1000);
-    // misty.Drive(0,0,0, 2000);
+    //turn back the other way
     misty.Drive(0, -40,0,2000);
-    // misty.Pause(1000);
-    // misty.Drive(0, 0, 0, 2000);
+    //reset to center
     misty.Drive(0, 20,0,2000);
-    // misty.Drive(0, 0, 0, 2000);
+
 }
 
 function sendText(){
@@ -50,11 +49,6 @@ function sendText(){
     );
 
 }
-// Issue commands to change LED and start driving
-
-// Register for TimeOfFlight data and add property tests
-
-// Register for TimeOfFlight data and add property tests
 function registerAll() {
   //register our sensors in a compact way, since we're doing the same checks
   //for all of them
@@ -83,16 +77,24 @@ function unregisterAll(){
 
 function _FaceRec(data){
     misty.Debug("Handling face recognition event");
+    //we don't want to spam our users, so we will send an email/text as often as every minute
+    //otherwise it will trigger sequentially for as long as it is looking at someone.
+    //this will eat up your text message tokens if you purchase them and turn this off.
+    //so don't lower the constants lower than 60
+    const time_to_wait = 60;
     if (data.PropertyTestResults[0].PropertyValue == "unknown person"){
         misty.Debug("Intruder Detected !!");
         misty.Debug(secondsPast(misty.Get("emailSent")));
-        if (secondsPast(misty.Get("emailSent")) > 5){
+        if (secondsPast(misty.Get("emailSent")) > time_to_wait){
+            //this file needs to be uploaded before it will run
             misty.PlayAudio("intruder-alert.wav");
+            //an email is sent in the _TakePicture data handler
             misty.TakePicture(true, "intruderPIC", 1200, 1600, false, true);
+            //update timestamp
             misty.Set("emailSent",(new Date()).toUTCString());
             misty.Debug("Email sent");
         }
-        if (secondsPast(misty.Get("textSent")) > 5){
+        if (secondsPast(misty.Get("textSent")) > time_to_wait){
           sendText();
           misty.Set("textSent", (new Date()).toUTCString());
           misty.Debug("Text sent");
@@ -104,6 +106,7 @@ function _FaceRec(data){
 }
 
 function _SerialMessage(data) {
+  //receive arduino sensor data
     if(data !== undefined && data !== null)
     {
         var obj = JSON.parse(data.AdditionalResults[0].Message);
@@ -123,6 +126,7 @@ function _SerialMessage(data) {
               misty.Debug("Climate Sent.");
             }
             misty.Set("climateSent", (new Date()).toUTCString());
+            //update timestamp
         }
     }
 }
@@ -131,6 +135,7 @@ function _TakePicture(data){
   misty.Debug("Taking a picture");
 	var base64Image = data.Result.Base64;
   	misty.Debug(base64Image);
+    //send an email with the 'intruder mode' set
   	sendEmail(base64Image, 'intruder');
 }
 
@@ -285,8 +290,10 @@ misty.Set("timeInDrive", getRandomInt(3, 8));
 
 while(true)
 {
-    //wait for misty to begin next cycle, give it time to think
     misty.Pause(50);
+    //wait for misty to begin next cycle, give it time to think
+    //looking around will stall out misty- so we have disabled it for the time being, but some tinkering
+    //will allow it to work better- it just waits too much and doesn't look great
     // if (secondsPast(misty.Get("lookStartTime")) > misty.Get("timeInLook")){
     //     look_around();
     // }

@@ -40,6 +40,7 @@ doPost(e)
       var img_str = '<html><body><img src="data:image/jpeg;base64,'+base64+'"></body></html>';
       //turn the image into a blob so that it is suitable for transmission
       var blob = Utilities.newBlob(img_str, 'text/html', 'event_image.html');
+      //send an email!
       subject = "Misty Detected An Intruder";
       message = "At " + (new Date).toLocaleString() + ", Misty detected an intruder.\nMisty is looking at:\n" + objectList;
       MailApp.sendEmail({
@@ -53,7 +54,7 @@ doPost(e)
     //if the temperature sensors detect that it is too warm, send a signal for a fire, or something.
     case "toohot":
       subject = "Misty Detected High Temperatures";
-      message = "At " + (new Date).toLocaleString() + ", Misty detected high temperatures.\nTemperatre: " + data;
+      message = "At " + (new Date).toLocaleString() + ", Misty detected high temperatures.\nTemperature: " + data;
       MailApp.sendEmail({
         to:email,
         subject: subject,
@@ -82,6 +83,7 @@ doPost(e)
 }
 
 function CloudVisionAPI(imageBase64) {
+  var api_key = 'YOUR-GOOGLE-VISION-API-KEY-HERE';
   var payload = JSON.stringify({
     requests: [{
       image: {
@@ -94,7 +96,7 @@ function CloudVisionAPI(imageBase64) {
     }]
   });
 
-  var requestUrl = 'https://vision.googleapis.com/v1/images:annotate?key=<API_KEY>';
+  var requestUrl = 'https://vision.googleapis.com/v1/images:annotate?key='+api_key;
   var response = UrlFetchApp.fetch(requestUrl, {
     method: 'POST',
     contentType: 'application/json',
@@ -106,15 +108,27 @@ function CloudVisionAPI(imageBase64) {
 
 }
 
-
-
-function testJSON(json){
-  testObject= '{"responses":[{"labelAnnotations":[{"mid":"/m/0w7s","description":"Aerospace engineering","score":0.90562046,"topicality":0.90562046},{"mid":"/m/025t3bg","description":"Air travel","score":0.87429196,"topicality":0.87429196},{"mid":"/m/0sgh53y","description":"Selfie","score":0.7511746,"topicality":0.7511746}]}]}';
-  test_json = JSON.parse(testObject);
-  test_json = test_json.responses[0].labelAnnotations;
-  for(i in test_json){
-    Logger.log(i);
-    Logger.log(test_json[i].description);
-  }
-
-}
+//function TextToSpeechAPI(){
+//    var payload = JSON.stringify({
+//      "input": {
+//        "text": "I'm saying things!"
+//      },
+//      "voice": {
+//        "languageCode": "en-US"
+//      },
+//      "audioConfig": {
+//        "audioEncoding": "MP3"
+//      }
+//  });
+//  var api_key = 'insert google text to speech api key here'
+//  var requestUrl = 'https://texttospeech.googleapis.com/v1/text:synthesize?key=' + api_key;
+//  var response = UrlFetchApp.fetch(requestUrl, {
+//    method: 'POST',
+//    contentType: 'application/json',
+//    payload: payload,
+//    muteHttpExceptions: true
+//  }).getContentText();
+//  Logger.log(response);
+//  return JSON.parse(response);
+//}
+//
