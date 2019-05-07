@@ -19,7 +19,7 @@ Once more, you will need an API-Key for that. This is well documented on the int
 
 5) To send an  email, fill in your email on `line 220` of `sentry.js`. 
 
-Inside the atomic functions folder, you will also find two skills we used to test the functionality of Misty independent of the rest of the working system. Here you can test the `send-email` functionality in addition to testing to see if the sensors attached to an arduino are sending information properly.
+Inside the atomic functions folder, you will also find two skills we used to test the functionality of Misty independent of the rest of the working system. Here you can test the `sendEmail()` functionality in addition to testing to see if the sensors attached to an arduino are sending information properly.
 
 You will need to follow similar directions as above in order to make that function.
 
