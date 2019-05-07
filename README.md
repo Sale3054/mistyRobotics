@@ -38,3 +38,6 @@ All of this functionality is an excellent starting place to tie together other t
 The Google Apps Script is essential to circumventing some of the problematic data types that Misty encounters, enabling you to do more back-end logic and utilize libraries you otherwise wouldn't be able to via Misty, either due to computing power or software limitations.
 
 Give it a go!
+
+#### A Side Note:
+There is functioning code in the Google Apps Script that makes a request to the Google Text to Speech API to retrieve the audio encoded as a string, however, we were not able to convert the data to something that Misty was able to recognize. There is a seperate chunk of code in the repo: `audioTo64.js`, but we did not have an opportunity to test that. This was provided by Johnathan (one of the members of the Misty team)! If you get a chance, some tinkering will result in a talking Misty!
